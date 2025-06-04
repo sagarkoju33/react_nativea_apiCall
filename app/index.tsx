@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   SafeAreaView,
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import AppBar from "./detail";
 type User = {
   id: number;
   email: string;
@@ -29,9 +31,18 @@ export default function UsersScreen() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("https://reqres.in/api/users?page=2");
+      const res = await fetch("https://reqres.in/api/users?page=2", {
+        headers: {
+          "x-api-key": "reqres-free-v1",
+          Accept: "application/json",
+        },
+      });
       const json = await res.json();
-      setUsers(json.data); // data is under "data" key
+      if (json.data) {
+        setUsers(json.data);
+      } else {
+        console.error("Unexpected response format:", json);
+      }
     } catch (error) {
       console.error("Failed to load users:", error);
     } finally {
@@ -70,6 +81,21 @@ export default function UsersScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* <Text
+        style={{
+          justifyContent: "center",
+          color: "red",
+          alignItems: "center",
+          fontSize: 20,
+          textAlign: "center",
+        }}
+      >
+        Fake Api Calling
+      </Text> */}
+      <AppBar
+        title="Flutter Style AppBar"
+        onBackPress={() => Alert.alert("Back button pressed")}
+      />
       <FlatList
         data={users}
         keyExtractor={(item) => item.id.toString()}
